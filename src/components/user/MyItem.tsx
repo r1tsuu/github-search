@@ -3,13 +3,11 @@ import { Link } from 'react-router-dom'
 import React from "react"
 
 export const MyItemUser = (props: MyItemProps) => {
-  const test = () => props.onUserSelect(props.user.login)
   return(
     <React.Fragment>
       <Link to={`/user/${props.user.login}`} style={{ textDecoration: 'none' }}>
         <Card
           sx={{":hover":{backgroundColor: 'silver', cursor: 'pointer'}}}
-          onClick={test}
           >
           <Grid container maxHeight={100} textAlign='center' justifyContent='center'>
             <Grid item xs={3} >

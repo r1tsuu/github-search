@@ -8,11 +8,8 @@ import { MyUserInfo } from "../components/user/MyUserInfo"
 
 export const HomePage = () => {
   const [users, setUsers] = useState<UserSearchType[]>([])
-  const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [fetchError, setFetchError] = useState<boolean>(false)
-
-  const goBack = () => setSelectedUser(null)
 
   const fetchUsers = (username:string) => {
     setFetchError(false)
@@ -26,7 +23,6 @@ export const HomePage = () => {
   }
   return(
     <React.Fragment>
-      {!selectedUser ?
       <Grid container justifyContent='center' alignItems='center'>
         <Grid item mt='5em' justifyContent='center'>
           <MySearch onSearch={(value) => fetchUsers(value)}/>
@@ -34,16 +30,9 @@ export const HomePage = () => {
         </Grid>
         <Grid item mt='5em'>
           {isLoading && <CircularProgress/>}
-          <MyListItemUser onUserSelect={login => setSelectedUser(login)} users={users} /> 
+          <MyListItemUser users={users} /> 
         </Grid>
       </Grid>
-      :
-      <Grid container justifyContent='center' alignItems='center' >
-        <Grid item mt='5em' xs={12}>
-          <MyUserInfo login={selectedUser}/>
-        </Grid>
-      </Grid>
-    }
     </React.Fragment>
   )
 }

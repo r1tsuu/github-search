@@ -8,7 +8,7 @@ export const MyListItemUser = (props: MyListItemProps) => {
       <Grid container spacing={7} alignItems={'center'} justifyContent={'center'}>
         {props.users.map(user => (
           <Grid item xs={12} md={4}>
-            <MyItemUser onUserSelect={props.onUserSelect} user={user} key={user.login}/>
+            <MyItemUser user={user} key={user.login}/>
           </Grid>
         ))}
       </Grid>

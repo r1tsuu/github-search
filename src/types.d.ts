@@ -1,3 +1,5 @@
+
+/* Users or Repositories search mode */
 interface HeaderProps {
   currentMode: string
   setCurrentMode: React.Dispatch<React.SetStateAction<string>>
@@ -20,12 +22,10 @@ interface MySearchProps {
 
 interface MyListItemProps {
   users: UserSearchType[]
-  onUserSelect: (username: string) => any
 }
 
 interface MyItemProps {
   user: UserSearchType
-  onUserSelect: (username: string) => any
 }
 
 interface MyUserInfoProps {
