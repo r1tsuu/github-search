@@ -1,4 +1,5 @@
 import { Grid, Typography, Button } from "@mui/material"
+import { Link } from 'react-router-dom'
 import React from "react"
 
 export const MyUserInfoCard = (props: MyUserInfoCardProps) => {
@@ -36,6 +37,11 @@ export const MyUserInfoCard = (props: MyUserInfoCardProps) => {
           </Grid>
           <Grid item xs={12} marginX='2.75rem' marginTop='1.25em'>
           <Button fullWidth sx={{fontSize: '1.25rem', fontWeight: 'bold'}} variant='contained' onClick={openGithubUserPage}>Visit Page</Button>
+          </Grid>
+          <Grid item xs={12} marginX='2.75rem' marginTop='1.25em'>
+            <Link to='/' style={{ textDecoration: 'none' }}>
+              <Button fullWidth sx={{fontSize: '1.25rem', fontWeight: 'bold'}} variant='contained'> Back </Button>
+            </Link>
           </Grid>
         </Grid>
     </React.Fragment>
