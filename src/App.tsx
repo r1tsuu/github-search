@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@emotion/react';
-import { AppBar, Button, Card, CardMedia, Container, createMuiTheme, createTheme, CssBaseline, Grid, Input, TextField, Toolbar, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import { AppBar, Button, Card, CardMedia, CircularProgress, Container, createMuiTheme, createTheme, CssBaseline, Grid, Input, TextField, Toolbar, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 
@@ -19,13 +19,106 @@ theme.typography.h4 = {
   }
 }
 
+type User = {
+  login: string,
+  id: number,
+  avatar_url: string,
+  html_url: string,
+  followers: number,
+  following: number,
+}
+
+interface MyUserInfoCardProps {
+  user: User
+}
+const MyUserInfoCard = (props: MyUserInfoCardProps) => {
+  const openGithubUserPage = () => {
+    window.open(props.user.html_url)
+  }
+  return (
+    <React.Fragment>
+        <Grid container justifyContent='center' alignItems='center' maxWidth='380px'>
+          <Grid item xs={12}>
+            <img src={props.user.avatar_url} height={'300px'}/>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography fontWeight='bold' fontSize='2rem'>{props.user.login}</Typography>
+          </Grid>
+          <Grid container item alignItems='center' justifyContent='center' textAlign='center'>
+            <Grid item xs={6} >
+            <Typography fontWeight='bold' fontSize='1.5rem'>Followers:</Typography>
+            </Grid>
+            <Grid item xs={6} >
+            <Typography  fontWeight='bold' fontSize='1.5rem'>{props.user.followers}</Typography>
+            </Grid>
+            <Grid item xs={6} >
+            <Typography fontWeight='bold'  fontSize='1.5rem'>Followin:</Typography>
+            </Grid>
+            <Grid item xs={6} >
+            <Typography fontWeight='bold'  fontSize='1.5rem'>{props.user.following}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+            <Typography fontWeight='bold'  fontSize='1.5rem'>Id:</Typography>
+            </Grid>
+            <Grid item  xs={6}>
+            <Typography fontWeight='bold'  fontSize='1.5rem'>{props.user.id}</Typography>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} marginX='2.75rem' marginTop='1.25em'>
+          <Button fullWidth sx={{fontSize: '1.25rem', fontWeight: 'bold'}} variant='contained' onClick={openGithubUserPage}>Visit Page</Button>
+          </Grid>
+        </Grid>
+    </React.Fragment>
+  )
+}
+
+interface MyUserInfoProps {
+  login: string
+}
+const MyUserInfo = (props: MyUserInfoProps) => {
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  
+  useEffect(() => {
+    fetchUser()
+  }, [])
+
+  const fetchUser = () => {
+    axios.get<User>('https://api.github.com/users/' + props.login)
+    .then( (response) => {
+      setUser(response.data)
+    })
+    .then(() => setIsLoading(false))
+    setIsLoading(true)
+  }
+
+  return (
+    <React.Fragment>
+      <Grid container alignItems='center' justifyContent='center' textAlign='center'>
+        <Grid item xs={12}>
+          <Typography variant='h3'> User Details </Typography>
+        </Grid>
+        <Grid item marginTop='1.5em'>
+          {isLoading && <CircularProgress/>}
+          {user && <MyUserInfoCard user={user}/>}
+        </Grid>
+      </Grid>
+    </React.Fragment>
+  )
+}
+
 interface MyItemProps {
-  user: UserType
+  user: UserSearchType
+  onUserSelect: (username: string) => any
 }
 const MyItem = (props: MyItemProps) => {
+  const test = () => props.onUserSelect(props.user.login)
   return(
     <React.Fragment>
-      <Card sx={{":hover":{backgroundColor: 'silver', cursor: 'pointer'}}}>
+      <Card
+        sx={{":hover":{backgroundColor: 'silver', cursor: 'pointer'}}}
+        onClick={test}
+        >
         <Grid container maxHeight={100} textAlign='center' justifyContent='center'>
           <Grid item xs={3} >
           <img src={props.user.avatar_url} height='100'/>
@@ -44,7 +137,8 @@ const MyItem = (props: MyItemProps) => {
 }
 
 interface MyListItemProps {
-  users: UserType[]
+  users: UserSearchType[]
+  onUserSelect: (username: string) => any
 }
 const MyListItem = (props: MyListItemProps) => {
   return(
@@ -52,7 +146,7 @@ const MyListItem = (props: MyListItemProps) => {
       <Grid container spacing={7} alignItems={'center'} justifyContent={'center'}>
         {props.users.map(user => (
           <Grid item xs={12} md={4}>
-            <MyItem user={user} key={user.login}/>
+            <MyItem onUserSelect={props.onUserSelect} user={user} key={user.login}/>
           </Grid>
         ))}
       </Grid>
@@ -98,6 +192,7 @@ const MySearch = (props: MySearchProps) => {
           fullWidth 
           variant='contained'
           onClick={callback}
+          sx={{fontSize: '1.25rem', fontWeight: 'bold'}}
           >Search</Button>
         </Grid>
       </Grid>
@@ -106,33 +201,56 @@ const MySearch = (props: MySearchProps) => {
 }
 
 
-type UserType = {
+type UserSearchType = {
   login: string
   avatar_url: string
 
 }
 
 type ResponseSearchType = {
-  items: UserType[]
+  items: UserSearchType[]
 
 }
+
 const Main = () => {
-  const [users, setUsers] = useState<UserType[]>([])
+  const [users, setUsers] = useState<UserSearchType[]>([])
+  const [selectedUser, setSelectedUser] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const goBack = () => setSelectedUser(null)
 
   const fetchUsers = (username:string) => {
     axios.get<ResponseSearchType>('https://api.github.com/search/users?q=' + username)
     .then(res => setUsers(res.data.items))
+    .then(() => setIsLoading(false))
+    setIsLoading(true)
   }
   return(
     <React.Fragment>
+      {!selectedUser ?
       <Grid container justifyContent='center' alignItems='center'>
         <Grid item mt='5em'>
           <MySearch onSearch={(value) => fetchUsers(value)}/>
         </Grid>
         <Grid item mt='5em'>
-          <MyListItem users={users}/>
+          {isLoading && <CircularProgress/>}
+          <MyListItem onUserSelect={login => setSelectedUser(login)} users={users} /> 
         </Grid>
       </Grid>
+      :
+      <Grid container justifyContent='center' alignItems='center' >
+        <Grid item mt='5em' xs={12}>
+          <MyUserInfo login={selectedUser}/>
+        </Grid>
+        <Grid item marginTop='1.25em'>
+        <Button 
+        sx={{width: '292px', fontSize: '1.25rem', fontWeight: 'bold'}}
+          variant='contained'
+          onClick={goBack}
+          >Back to users list</Button> 
+        </Grid>
+      </Grid>
+    }
     </React.Fragment>
   )
 }
@@ -144,7 +262,7 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   return(
     <React.Fragment>
-      <Toolbar sx={{textShadow: '1px 1px gray', borderBottom: 1, borderColor: 'divider', marginTop: '1.5em', textAlign: 'center'}}>
+      <Toolbar sx={{ color: 'antiquewhite', borderBottom: 1, borderColor: 'divider', marginTop: '1.5em', textAlign: 'center'}}>
         <Grid container alignItems='center'>
           <Grid item xs={4}>
           <Button 

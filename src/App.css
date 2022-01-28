@@ -1,0 +1,22 @@
+
+html {
+  height: 100%;
+}
+body {
+  position:absolute; top:0; bottom:0; right:0; left:0;
+}
+#root {
+  height: 100%;
+  position:absolute; top:0; bottom:0; right:0; left:0;
+}
+header {
+  background-color: #24292f;
+  font-size: 0px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+
+h2 {
+  color: antiquewhite;
+}
