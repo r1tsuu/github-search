@@ -28,7 +28,7 @@ export const HomePage = () => {
           <MySearch onSearch={(value) => fetchUsers(value)}/>
           {fetchError && <FetchError/> }
         </Grid>
-        <Grid item mt='5em'>
+        <Grid item mt='5em' xs={12}>
           {isLoading && <CircularProgress/>}
           <MyListItemUser users={users} /> 
         </Grid>
